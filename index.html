@@ -1,180 +1,803 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KundalikMobile — Dashboard</title>
-
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>KundalikMobile — Complete SPA</title>
+<link rel="icon" href="data:,">
 <style>
-    body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: linear-gradient(135deg, #4b6cb7, #182848);
-        color: white;
-    }
-    .center {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-    }
-    .login-box {
-        background: rgba(255,255,255,0.15);
-        padding: 35px;
-        border-radius: 20px;
-        backdrop-filter: blur(15px);
-        box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-        width: 320px;
-        animation: fade 0.7s ease;
-    }
-    @keyframes fade { from {opacity: 0;} to {opacity: 1;} }
-    input {
-        width: 100%;
-        padding: 12px;
-        margin: 10px 0;
-        border-radius: 12px;
-        border: none;
-        outline: none;
-    }
-    button {
-        width: 100%;
-        padding: 12px;
-        border-radius: 12px;
-        border: none;
-        background: #6a5acd;
-        color: white;
-        font-size: 16px;
-        cursor: pointer;
-        transition: 0.3s;
-    }
-    button:hover {
-        background: #7d6dff;
-    }
-    #dashboard {
-        display: none;
-        padding: 20px;
-        animation: fade 0.6s ease;
-    }
-    .class-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
-        gap: 10px;
-        margin-top: 20px;
-    }
-    .class-card {
-        background: rgba(255,255,255,0.25);
-        backdrop-filter: blur(10px);
-        border-radius: 14px;
-        padding: 15px;
-        text-align: center;
-        font-weight: bold;
-        cursor: pointer;
-        transition: 0.3s;
-    }
-    .class-card:hover {
-        background: rgba(255,255,255,0.4);
-        transform: scale(1.05);
-    }
-    .subject-box {
-        margin-top: 25px;
-        padding: 20px;
-        border-radius: 20px;
-        background: rgba(255,255,255,0.15);
-        backdrop-filter: blur(12px);
-    }
-    .subjects-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-        gap: 12px;
-    }
-    .subject-card {
-        background: rgba(255,255,255,0.3);
-        padding: 12px;
-        border-radius: 15px;
-        text-align: center;
-        color: #222;
-        font-weight: bold;
-        background: white;
-    }
-</style>
+/* ---------------------------
+   GLOBAL (Color / Typography)
+   --------------------------- */
+:root{
+  --bg-1: #1A73E8; /* gradient start */
+  --bg-2: #003F7D; /* gradient end */
+  --card-bg: #ffffff;
+  --accent: linear-gradient(135deg,var(--bg-1),var(--bg-2));
+  --muted: rgba(0,0,0,0.6);
+  --glass: rgba(255,255,255,0.92);
+  --success: #16a34a;
+  --danger: #ef4444;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial; -webkit-font-smoothing:antialiased;}
+body{
+  background: radial-gradient(1200px 600px at 10% 10%, rgba(255,255,255,0.02), transparent),
+              linear-gradient(135deg,var(--bg-1),var(--bg-2));
+  color:#07203b;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:28px;
+}
 
+/* ---------- Login Card (kept from original design) ---------- */
+.app-shell{width:100%;max-width:1200px;margin:0 auto;}
+
+/* top-level container holds login or dashboard */
+.screen{display:flex;align-items:center;justify-content:center;min-height:80vh;gap:24px;}
+
+/* card style close to original */
+.login-card{
+  width:360px;
+  background:var(--card-bg);
+  border-radius:22px;
+  padding:28px;
+  box-shadow:0 18px 40px rgba(8,30,60,0.2);
+  animation: lift 600ms ease both;
+}
+@keyframes lift{from{opacity:0; transform:translateY(18px)} to{opacity:1; transform:none} }
+.title{font-size:24px;color:#243B6B;font-weight:700;text-align:center;margin-bottom:8px}
+.small{font-size:13px;color:#5b6b84;margin-bottom:14px;text-align:center}
+.input{
+  width:100%;padding:12px;border-radius:12px;border:1px solid #e6eef8;margin:8px 0;font-size:15px;
+}
+.btn{
+  width:100%;padding:12px;border-radius:14px;border:none;background:var(--bg-1);background-image:var(--accent);color:white;font-weight:700;font-size:16px;cursor:pointer;
+  box-shadow:0 6px 18px rgba(16,45,100,0.12);
+}
+.social-row{display:flex;gap:10px;margin-top:10px}
+.social{
+  flex:1;padding:10px;border-radius:12px;background:linear-gradient(180deg,rgba(0,0,0,0.03),rgba(0,0,0,0.02));border:1px solid rgba(0,0,0,0.04);cursor:pointer;text-align:center;font-weight:600;font-size:14px
+}
+.ai-banner{margin-top:14px;padding:10px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.92));color:#243B6B;text-align:center;font-weight:600;}
+
+/* small links */
+.row-between{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.link{color:#1A73E8;cursor:pointer;font-weight:600;font-size:13px}
+
+/* ---------- Dashboard Layout (Variant B, modern) ---------- */
+.dashboard{
+  width:100%;
+  display:grid;
+  grid-template-columns:260px 1fr 360px;
+  gap:20px;
+  align-items:start;
+  animation: fadeIn 600ms ease both;
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* LEFT SIDEBAR */
+.sidebar{
+  background:var(--card-bg);
+  border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(8,30,60,0.08);
+  position:sticky;top:28px;height:calc(100vh - 56px);overflow:auto;
+}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.logo{
+  width:48px;height:48px;border-radius:10px;background:var(--bg-1);display:flex;align-items:center;justify-content:center;color:white;font-weight:800;
+  box-shadow:0 6px 16px rgba(16,45,100,0.12)
+}
+.user-block{padding:10px;border-radius:10px;background:linear-gradient(180deg,rgba(10,112,224,0.03),transparent);margin-bottom:14px}
+.role-pill{display:inline-block;padding:6px 10px;border-radius:999px;background:linear-gradient(90deg,#76b0ff,#1A73E8);color:white;font-weight:600;font-size:13px}
+
+/* nav */
+.nav{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.nav button{padding:10px;border-radius:10px;border:none;text-align:left;background:transparent;cursor:pointer;font-weight:700;color:#243B6B}
+.nav button.active{background:linear-gradient(90deg, rgba(26,115,232,0.08), rgba(0,63,125,0.06));box-shadow:inset 0 0 0 1px rgba(26,115,232,0.06);}
+
+/* CENTER MAIN */
+.main{
+  background:rgba(255,255,255,0.98);border-radius:16px;padding:20px;box-shadow:0 10px 30px rgba(8,30,60,0.06);height:calc(100vh - 56px);overflow:auto;
+}
+.header{
+  display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;
+}
+.search{
+  flex:1;display:flex;gap:10px;align-items:center;background:#f4f9ff;padding:10px;border-radius:12px;border:1px solid #e6f0ff;
+}
+.search input{border:none;background:transparent;outline:none;padding:8px 6px;width:100%}
+.top-actions{display:flex;gap:10px;align-items:center}
+.icon-btn{padding:10px;border-radius:10px;background:linear-gradient(180deg,rgba(10,112,224,0.06),transparent);border:none;cursor:pointer}
+
+/* cards row */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+.card-mini{background:linear-gradient(180deg, #fff, #fbfdff);padding:14px;border-radius:12px;border:1px solid #e9f2ff}
+.card-mini h4{margin:0;color:#243B6B}
+.card-mini p{margin:6px 0 0;font-size:13px;color:#6b7b92}
+
+/* CLASSES grid */
+.classes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:10px;margin-top:8px}
+.class-item{background:#f7fbff;border-radius:10px;padding:10px;text-align:center;border:1px solid #e6f3ff;font-weight:700;color:#234d9b;cursor:pointer;transition:transform .18s}
+.class-item:hover{transform:translateY(-6px)}
+
+/* SUBJECTS */
+.subjects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-top:12px}
+.subject-card{background:#fff;border-radius:10px;padding:12px;border:1px solid #f0f6ff;box-shadow:0 6px 18px rgba(16,45,100,0.03);}
+
+/* ACTION AREA: teacher tools etc */
+.tools{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.tool-btn{padding:10px 12px;border-radius:10px;border:none;background:linear-gradient(90deg,#1A73E8,#003F7D);color:white;font-weight:700;cursor:pointer}
+
+/* RIGHT SIDEBAR (Notifications & quick AI) */
+.rightbar{
+  background:var(--card-bg);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(8,30,60,0.08);height:calc(100vh - 56px);overflow:auto;position:sticky;top:28px;
+}
+.notif-list{display:flex;flex-direction:column;gap:8px}
+.notif{padding:10px;border-radius:10px;background:linear-gradient(180deg,rgba(26,115,232,0.06),transparent);border:1px solid rgba(26,115,232,0.06);font-size:14px}
+.automation{margin-top:12px;border-radius:10px;padding:10px;border:1px dashed #e6f3ff;background:#fbfdff}
+
+/* footer small */
+.footer-small{text-align:center;padding:12px;color:#6b7b92;font-size:13px}
+
+/* responsive */
+@media (max-width:1024px){
+  .dashboard{grid-template-columns:1fr;gap:12px}
+  .sidebar,.rightbar{height:auto;position:relative}
+  .main{height:auto}
+}
+</style>
 </head>
 <body>
+<div class="app-shell">
 
-<!-- LOGIN PAGE -->
-<div id="loginPage" class="center">
-    <div class="login-box">
-        <h2 style="text-align:center;">KundalikMobile</h2>
-        <input id="login" type="text" placeholder="Login">
-        <input id="parol" type="password" placeholder="Parol">
-        <button onclick="loginFn()">Kirish</button>
+  <!-- START SCREEN: LOGIN CARD -->
+  <div id="startScreen" class="screen">
+    <div class="login-card">
+      <div class="title">KundalikMobile</div>
+      <div class="small">Yagona platforma — o'qituvchi, o'quvchi va ota-ona uchun</div>
+
+      <input id="loginEmail" class="input" placeholder="Email yoki Login" />
+      <input id="loginPass" class="input" placeholder="Parol" type="password" />
+      <button class="btn" id="btnLogin">Kirish</button>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
+        <div class="link" id="openRegister">Roʻyxatdan oʻtish</div>
+        <div class="link" id="forgotPass">Parol esdan chiqdi?</div>
+      </div>
+
+      <div class="social-row">
+        <div class="social" id="btnGoogle">Google</div>
+        <div class="social" id="btnApple">Apple</div>
+      </div>
+
+      <div class="ai-banner">🤖 AI avtologin yoqilgan — internet bo'lsa avtomatik kiradi</div>
     </div>
-</div>
+  </div>
 
-<!-- DASHBOARD -->
-<div id="dashboard">
-    <h1>KundalikMobile Dashboard</h1>
-    <button onclick="logout()" style="background:#e74c3c;margin-top:10px;border-radius:10px;">Chiqish</button>
+  <!-- DASHBOARD (hidden until login) -->
+  <div id="appScreen" style="display:none;">
+    <div class="dashboard">
+      <!-- LEFT SIDEBAR -->
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="logo">KM</div>
+          <div>
+            <div style="font-weight:800;color:#243B6B">KundalikMobile</div>
+            <div style="font-size:12px;color:#6b7b92">SmartSchool System</div>
+          </div>
+        </div>
 
-    <h2>Sinflar</h2>
-    <div class="class-grid" id="classList"></div>
+        <div class="user-block" id="userBlock">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div id="uName" style="font-weight:800;color:#243B6B">Foydalanuvchi</div>
+              <div style="font-size:13px;color:#6b7b92" id="uRole">Rol: —</div>
+            </div>
+            <div class="role-pill" id="uClass">1A</div>
+          </div>
+        </div>
 
-    <div id="subjectsSection" class="subject-box" style="display:none;">
-        <h3 id="selectedClass"></h3>
-        <div class="subjects-grid" id="subjects"></div>
+        <div class="nav">
+          <button class="active" id="navOverview" onclick="goto('overview')">Overview</button>
+          <button id="navStudents" onclick="goto('students')">O'quvchilar</button>
+          <button id="navGrades" onclick="goto('grades')">Baholar</button>
+          <button id="navAttendance" onclick="goto('attendance')">Davomat</button>
+          <button id="navSchedule" onclick="goto('schedule')">Dars jadvali</button>
+          <button id="navAI" onclick="goto('ai')">AI yordamchi</button>
+          <button id="navSettings" onclick="goto('settings')">Sozlamalar</button>
+        </div>
+
+        <div style="margin-top:14px">
+          <div style="font-weight:700;color:#243B6B;margin-bottom:8px">Rol tanlang</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button onclick="setRole('teacher')" style="padding:8px;border-radius:10px;border:none;background:linear-gradient(90deg,#ffb74d,#ff8a00);color:#07203b;font-weight:700;cursor:pointer">O'qituvchi</button>
+            <button onclick="setRole('student')" style="padding:8px;border-radius:10px;border:none;background:linear-gradient(90deg,#76b0ff,#1A73E8);color:white;font-weight:700;cursor:pointer">O'quvchi</button>
+            <button onclick="setRole('parent')" style="padding:8px;border-radius:10px;border:none;background:linear-gradient(90deg,#7dd3fc,#0891b2);color:#07203b;font-weight:700;cursor:pointer">Ota-ona</button>
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- CENTER MAIN -->
+      <main class="main" id="mainContent">
+        <div class="header">
+          <div style="display:flex;gap:12px;align-items:center;width:100%">
+            <div style="display:flex;flex-direction:column">
+              <div style="font-size:22px;font-weight:800;color:#243B6B" id="pageTitle">Overview</div>
+              <div style="font-size:13px;color:#6b7b92" id="pageSub">Umumiy dashboard</div>
+            </div>
+          </div>
+          <div class="top-actions">
+            <div class="search">
+              🔎<input placeholder="Qidirish (o'quvchi, sinf, fan...)" id="quickSearch" oninput="quickSearch()" />
+            </div>
+            <button class="icon-btn" title="Create Automation" onclick="openAutomation()">⏱</button>
+            <button class="icon-btn" title="Notifications" onclick="focusNotifications()">🔔</button>
+            <button class="icon-btn" title="Logout" onclick="logout()">⬅️</button>
+          </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="cards" id="kpiCards">
+          <div class="card-mini">
+            <h4>O'quvchilar</h4>
+            <p id="kpiStudents">—</p>
+          </div>
+          <div class="card-mini">
+            <h4>Aktiv bildirishnomalar</h4>
+            <p id="kpiNotifs">—</p>
+          </div>
+          <div class="card-mini">
+            <h4>Avtomatizatsiyalar</h4>
+            <p id="kpiAuto">—</p>
+          </div>
+        </div>
+
+        <!-- Overview default content -->
+        <div id="overviewView">
+          <h3 style="color:#243B6B">Sinflar</h3>
+          <div class="classes-grid" id="classesGrid"></div>
+
+          <h3 style="color:#243B6B;margin-top:16px">Fanlar</h3>
+          <div class="subjects-grid" id="subjectsGrid"></div>
+        </div>
+
+        <!-- Students view -->
+        <div id="studentsView" style="display:none">
+          <h3 style="color:#243B6B">O'quvchilar ro'yxati</h3>
+          <div id="studentsList"></div>
+        </div>
+
+        <!-- Grades view -->
+        <div id="gradesView" style="display:none">
+          <h3 style="color:#243B6B">Baholar</h3>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px">
+            <select id="gradeClassSelect" onchange="renderGrades()"></select>
+            <select id="gradeSubjectSelect" onchange="renderGrades()"></select>
+            <button class="tool-btn" onclick="openGradeModal()">Yangi baho qo'shish</button>
+          </div>
+          <div id="gradesTable" style="margin-top:12px"></div>
+        </div>
+
+        <!-- Attendance view -->
+        <div id="attendanceView" style="display:none">
+          <h3 style="color:#243B6B">Davomat</h3>
+          <div id="attendanceContent" style="margin-top:8px"></div>
+        </div>
+
+        <!-- Schedule view -->
+        <div id="scheduleView" style="display:none">
+          <h3 style="color:#243B6B">Dars jadvali</h3>
+          <div id="scheduleContent" style="margin-top:8px"></div>
+        </div>
+
+        <!-- AI view -->
+        <div id="aiView" style="display:none">
+          <h3 style="color:#243B6B">AI yordamchi</h3>
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <textarea id="aiPrompt" placeholder="Savolingizni yozing..." style="flex:1;padding:10px;border-radius:10px;border:1px solid #e8f2ff"></textarea>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <button class="tool-btn" onclick="aiAsk()">So'rash</button>
+              <button class="tool-btn" onclick="aiGenerateTest()">Test yarat</button>
+              <button class="tool-btn" onclick="aiExplain()">Tushuntirish</button>
+            </div>
+          </div>
+          <div id="aiResponse" style="margin-top:12px;background:#fbfdff;padding:12px;border-radius:10px;border:1px solid #eef7ff"></div>
+        </div>
+
+        <!-- Settings -->
+        <div id="settingsView" style="display:none">
+          <h3 style="color:#243B6B">Sozlamalar</h3>
+          <div style="margin-top:8px">
+            <label>AI Mode: </label>
+            <select id="aiMode">
+              <option value="explain">Tushuntirish</option>
+              <option value="quiz">Test yaratish</option>
+            </select>
+          </div>
+          <div style="margin-top:12px">
+            <label>Auto-login (sim): </label>
+            <input type="checkbox" id="autoLoginToggle" />
+          </div>
+        </div>
+
+        <!-- hidden modals -->
+        <div id="gradeModal" style="display:none;background:#fff;padding:14px;border-radius:10px;margin-top:12px;border:1px solid #eef7ff">
+          <h4>Yangi baho qo'shish</h4>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <select id="modalClass"></select>
+            <select id="modalSubject"></select>
+            <input id="modalStudent" placeholder="O'quvchi nomi" />
+            <input id="modalGrade" placeholder="Baho (misol: 5/6/A...)" />
+            <button onclick="saveGrade()" class="tool-btn">Saqlash</button>
+          </div>
+        </div>
+
+        <div id="automationModal" style="display:none;margin-top:12px;background:#fff;padding:12px;border-radius:10px;border:1px solid #eef7ff">
+          <h4>Avtomatizatsiya yaratish (oddiy)</h4>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <select id="autoClass"></select>
+            <select id="autoSubject"></select>
+            <input id="autoInterval" placeholder="Interval (soniyalarda)" />
+            <input id="autoMsg" placeholder="Xabar ({{student}} {{grade}}... )" />
+            <button onclick="createAutomation()" class="tool-btn">Yaratish</button>
+            <button onclick="closeAutomation()" class="panel-button" style="background:transparent;color:#243B6B;border:1px solid #e6f3ff">Bekor</button>
+          </div>
+          <div id="autoList" style="margin-top:8px"></div>
+        </div>
+
+      </main>
+
+      <!-- RIGHT SIDEBAR -->
+      <aside class="rightbar">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:800;color:#243B6B">Bildirishnomalar</div>
+          <div style="font-size:12px;color:#6b7b92" id="notifCount">0</div>
+        </div>
+
+        <div id="notifList" class="notif-list" style="margin-top:12px">
+          <!-- dynamic -->
+        </div>
+
+        <div class="automation" id="quickAutomation">
+          <div style="font-weight:700;color:#243B6B">Avtomatlashtirish</div>
+          <div style="font-size:13px;color:#6b7b92">Timer-based xabarlar</div>
+          <div style="margin-top:8px">
+            <button class="panel-button" onclick="openAutomation()">Yangi</button>
+            <div id="autoSummary" style="margin-top:8px;font-size:13px;color:#6b7b92"></div>
+          </div>
+        </div>
+
+        <div style="height:18px"></div>
+        <div class="footer-small">Powered by SmartSchool AI • v1.0</div>
+      </aside>
     </div>
+  </div>
+
 </div>
 
 <script>
-    function loginFn() {
-        const lg = document.getElementById("login").value;
-        const pw = document.getElementById("parol").value;
+/* =============================
+   App Data & Initialization
+   ============================= */
+const SUBJECTS = [
+  "Matematika","Ingliz tili","Ona tili","Fizika","Kimyo","Biologiya","Tarix",
+  "Geografiya","Informatika","Algebra","Geometriya","Musiqa","San’at",
+  "Sport","Teknologiya","Iqtisod","Psixologiya","Falsafa"
+];
+// generate classes 1A..11D (A,B,V,D letters)
+const CLASSES = [];
+['A','B','V','D'].forEach(s => { for(let i=1;i<=11;i++) CLASSES.push(i+s) });
+// simple sample pupils per class
+const SAMPLE_NAMES = ["Ali","Vali","Murod","Sardor","Nilufar","Diyor","Madina","Laylo","Javlon","Sofia"];
+// storage keys
+const STORAGE_KEY = "kundalik_demo_v1";
 
-        if (lg.trim() !== "" && pw.trim() !== "") {
-            document.getElementById("loginPage").style.display = "none";
-            document.getElementById("dashboard").style.display = "block";
-        }
+let state = {
+  users: [], // {id,name,role,class}
+  currentUser: null,
+  grades: [], // {id,cls,subject,student,grade,teacher,date}
+  automations: [], // {id,cls,subject,interval,msg,timerId}
+  notifications: []
+};
+
+// load from localStorage if exists
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) state = JSON.parse(raw);
+    else seedDemo();
+  }catch(e){
+    console.error(e);seedDemo();
+  }
+}
+function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+/* seed demo users & grades */
+function seedDemo(){
+  state = { users:[], currentUser:null, grades:[], automations:[], notifications:[] };
+  // create one teacher and some students
+  state.users.push({id:uid(), name:"O'qituvchi Jamshid", role:"teacher", class:"1A"});
+  CLASSES.slice(0,6).forEach((cls, idx) => {
+    for(let i=0;i<4;i++){
+      const name = SAMPLE_NAMES[(idx+i)%SAMPLE_NAMES.length] + " " + (i+1);
+      state.users.push({id:uid(), name, role:"student", class:cls});
     }
+  });
+  // parent
+  state.users.push({id:uid(), name:"Ota-Onalar: Ziyoda", role:"parent", class:"1A"});
+  saveState();
+}
 
-    function logout() {
-        document.getElementById("dashboard").style.display = "none";
-        document.getElementById("loginPage").style.display = "flex";
+/* helper uid */
+function uid(){ return 'id_'+Math.random().toString(36).slice(2,9); }
+
+/* init app */
+loadState();
+renderOverview();
+
+/* =============================
+   AUTH (local simulation)
+   ============================= */
+document.getElementById('btnLogin').addEventListener('click', ()=>{
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPass').value.trim();
+  if(!email || !pass){ alert("Login va parolni kiriting! (demo)"); return; }
+  // demo: if user exists, login as that user; else create a demo user
+  let user = state.users.find(u => u.name.toLowerCase() === email.toLowerCase() || u.id === email);
+  if(!user){
+    // create a new student by default
+    user = {id:uid(), name: email, role:"student", class:"1A"};
+    state.users.push(user); saveState();
+  }
+  state.currentUser = user;
+  saveState();
+  openApp();
+});
+
+/* open app */
+function openApp(){
+  document.getElementById('startScreen').style.display='none';
+  document.getElementById('appScreen').style.display='block';
+  document.getElementById('uName').innerText = state.currentUser.name;
+  document.getElementById('uRole').innerText = "Rol: " + state.currentUser.role;
+  document.getElementById('uClass').innerText = state.currentUser.class || '—';
+  updateKPIs();
+  renderClasses();
+  renderSubjects();
+  renderStudentsList();
+  populateSelects();
+  renderAutomations();
+  renderNotifications();
+}
+
+/* logout */
+function logout(){
+  state.currentUser=null; saveState();
+  document.getElementById('appScreen').style.display='none';
+  document.getElementById('startScreen').style.display='flex';
+}
+
+/* quick role switch */
+function setRole(r){
+  if(!state.currentUser) return alert("Avvalo kirish qiling.");
+  state.currentUser.role = r;
+  document.getElementById('uRole').innerText = "Rol: " + r;
+  saveState();
+  goto('overview');
+}
+
+/* navigation */
+function goto(section){
+  // hide all views
+  ['overviewView','studentsView','gradesView','attendanceView','scheduleView','aiView','settingsView'].forEach(id=>document.getElementById(id).style.display='none');
+  // remove active from nav
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+  // show
+  switch(section){
+    case 'students': document.getElementById('studentsView').style.display='block'; document.getElementById('navStudents').classList.add('active'); break;
+    case 'grades': document.getElementById('gradesView').style.display='block'; document.getElementById('navGrades').classList.add('active'); break;
+    case 'attendance': document.getElementById('attendanceView').style.display='block'; document.getElementById('navAttendance').classList.add('active'); break;
+    case 'schedule': document.getElementById('scheduleView').style.display='block'; document.getElementById('navSchedule').classList.add('active'); break;
+    case 'ai': document.getElementById('aiView').style.display='block'; document.getElementById('navAI').classList.add('active'); break;
+    case 'settings': document.getElementById('settingsView').style.display='block'; document.getElementById('navSettings').classList.add('active'); break;
+    default: document.getElementById('overviewView').style.display='block'; document.getElementById('navOverview').classList.add('active'); break;
+  }
+  // update title
+  const titleMap = {overview:'Overview', students:"O'quvchilar", grades:'Baholar', attendance:'Davomat', schedule:'Dars jadvali', ai:'AI yordamchi', settings:'Sozlamalar'};
+  document.getElementById('pageTitle').innerText = titleMap[section] || 'Overview';
+  document.getElementById('pageSub').innerText = (section==='overview'?'Umumiy dashboard':'');
+}
+
+/* =============================
+   RENDER: Classes / Subjects / Students
+   ============================= */
+function renderClasses(){
+  const el = document.getElementById('classesGrid'); el.innerHTML='';
+  CLASSES.forEach(cls=>{
+    const d=document.createElement('div'); d.className='class-item'; d.innerText=cls;
+    d.onclick = ()=> { document.getElementById('uClass').innerText = cls; state.currentUser.class=cls; saveState(); showClassSubjects(cls); };
+    el.appendChild(d);
+  });
+  document.getElementById('kpiStudents').innerText = state.users.filter(u=>u.role==='student').length;
+}
+function renderSubjects(){
+  const el = document.getElementById('subjectsGrid'); el.innerHTML='';
+  SUBJECTS.forEach(s=>{
+    const c=document.createElement('div'); c.className='subject-card';
+    c.innerHTML = `<div style="font-weight:800;color:#243B6B">${s}</div><div style="font-size:13px;color:#6b7b92;margin-top:8px">Materiallar, baholar va AI</div><div style="margin-top:10px"><button class="tool-btn" onclick="openSubject('${s}')">Ochish</button></div>`;
+    el.appendChild(c);
+  });
+}
+function showClassSubjects(cls){
+  goto('overview'); // show overview and highlight class by setting uClass
+  showNotification("Sinf tanlandi: "+cls);
+}
+
+/* students list */
+function renderStudentsList(){
+  const list = state.users.filter(u=>u.role==='student' && (!state.currentUser.class || u.class===state.currentUser.class));
+  const el = document.getElementById('studentsList'); el.innerHTML='';
+  list.forEach(s=>{
+    const r = document.createElement('div'); r.style.display='flex'; r.style.justifyContent='space-between'; r.style.alignItems='center'; r.style.padding='8px'; r.style.borderBottom='1px solid #f0f6ff';
+    r.innerHTML = `<div><div style="font-weight:700;color:#243B6B">${s.name}</div><div style="font-size:12px;color:#6b7b92">${s.class}</div></div><div><button onclick="openStudent('${s.id}')" class="panel-button">Ko'rish</button></div>`;
+    el.appendChild(r);
+  });
+  document.getElementById('kpiStudents').innerText = list.length;
+}
+
+/* open subject */
+function openSubject(subject){
+  goto('grades');
+  document.getElementById('gradeSubjectSelect').value = subject;
+  renderGrades();
+}
+
+/* open student */
+function openStudent(id){
+  const s = state.users.find(u=>u.id===id);
+  if(!s) return;
+  goto('grades');
+  document.getElementById('gradeClassSelect').value = s.class;
+  document.getElementById('modalStudent').value = s.name;
+  renderGrades();
+}
+
+/* populate grade selects */
+function populateSelects(){
+  const clsSel = document.getElementById('gradeClassSelect'); clsSel.innerHTML='';
+  CLASSES.forEach(c=>{ const op=document.createElement('option'); op.value=c; op.innerText=c; clsSel.appendChild(op); });
+  const subSel = document.getElementById('gradeSubjectSelect'); subSel.innerHTML='';
+  SUBJECTS.forEach(s=>{ const op=document.createElement('option'); op.value=s; op.innerText=s; subSel.appendChild(op); });
+  // modal selects
+  const mcls = document.getElementById('modalClass'); mcls.innerHTML=''; CLASSES.forEach(c=>{ const op=document.createElement('option'); op.value=c; op.innerText=c; mcls.appendChild(op); });
+  const msub = document.getElementById('modalSubject'); msub.innerHTML=''; SUBJECTS.forEach(s=>{ const op=document.createElement('option'); op.value=s; op.innerText=s; msub.appendChild(op); });
+  // automation selects
+  const acls = document.getElementById('autoClass'); acls.innerHTML=''; CLASSES.forEach(c=>{ const op=document.createElement('option'); op.value=c; op.innerText=c; acls.appendChild(op); });
+  const asub = document.getElementById('autoSubject'); asub.innerHTML=''; SUBJECTS.forEach(s=>{ const op=document.createElement('option'); op.value=s; op.innerText=s; asub.appendChild(op); });
+  document.getElementById('gradeSubjectSelect').value = SUBJECTS[0];
+  document.getElementById('gradeClassSelect').value = CLASSES[0];
+}
+
+/* grades rendering */
+function renderGrades(){
+  const cls = document.getElementById('gradeClassSelect').value;
+  const subject = document.getElementById('gradeSubjectSelect').value;
+  const table = document.getElementById('gradesTable'); table.innerHTML='';
+  // header
+  const header = document.createElement('div'); header.style.display='flex'; header.style.gap='12px'; header.style.fontWeight='700';
+  header.innerHTML = `<div style="width:200px">O'quvchi</div><div style="width:120px">Fan</div><div style="width:80px">Baho</div><div style="width:160px">O'qituvchi</div>`;
+  table.appendChild(header);
+  const list = state.grades.filter(g=>g.cls===cls && g.subject===subject);
+  list.forEach(g=>{
+    const row = document.createElement('div'); row.style.display='flex'; row.style.gap='12px'; row.style.padding='8px 0'; row.style.borderBottom='1px solid #f0f6ff';
+    row.innerHTML = `<div style="width:200px">${g.student}</div><div style="width:120px">${g.subject}</div><div style="width:80px">${g.grade}</div><div style="width:160px">${g.teacher}</div>`;
+    table.appendChild(row);
+  });
+  if(list.length===0){
+    const p=document.createElement('div'); p.style.padding='12px'; p.innerText='Hozircha baho mavjud emas'; table.appendChild(p);
+  }
+}
+
+/* grade modal */
+function openGradeModal(){
+  document.getElementById('gradeModal').style.display='block';
+  document.getElementById('modalClass').value = document.getElementById('gradeClassSelect').value || CLASSES[0];
+  document.getElementById('modalSubject').value = document.getElementById('gradeSubjectSelect').value || SUBJECTS[0];
+}
+function saveGrade(){
+  const cls = document.getElementById('modalClass').value;
+  const subject = document.getElementById('modalSubject').value;
+  const student = document.getElementById('modalStudent').value.trim();
+  const grade = document.getElementById('modalGrade').value.trim();
+  if(!student || !grade){ alert('Ism va bahoni kiriting'); return; }
+  const teacher = state.currentUser ? state.currentUser.name : 'System';
+  state.grades.push({id:uid(), cls, subject, student, grade, teacher, date:Date.now()});
+  saveState();
+  renderGrades();
+  showNotification(`Yangi baho qo'yildi: ${student} — ${grade}`);
+  document.getElementById('modalStudent').value=''; document.getElementById('modalGrade').value='';
+  document.getElementById('gradeModal').style.display='none';
+}
+
+/* =============================
+   Attendance (simple)
+   ============================= */
+function renderAttendance(){
+  const content = document.getElementById('attendanceContent'); content.innerHTML='';
+  const cls = state.currentUser.class || CLASSES[0];
+  const studs = state.users.filter(u=>u.role==='student' && u.class===cls);
+  studs.forEach(s=>{
+    const r=document.createElement('div'); r.style.display='flex'; r.style.justifyContent='space-between'; r.style.padding='8px'; r.style.borderBottom='1px solid #f0f6ff';
+    r.innerHTML = `<div>${s.name}</div><div><button class="panel-button" onclick="markAttendance('${s.id}')">Keldi</button></div>`;
+    content.appendChild(r);
+  });
+}
+function markAttendance(id){
+  const s = state.users.find(u=>u.id===id);
+  state.notifications.push({id:uid(), text:`${s.name} darsga keldi (${new Date().toLocaleTimeString()})`, date:Date.now()});
+  saveState(); renderNotifications(); showNotification(`${s.name} uchun davomat saqlandi`);
+}
+
+/* =============================
+   AI simulation (frontend)
+   ============================= */
+function aiAsk(){
+  const prompt = document.getElementById('aiPrompt').value.trim();
+  if(!prompt){ alert('Savol yozing'); return; }
+  showLoadingAI();
+  setTimeout(()=>{
+    const resp = `AI (sim): "${prompt}" ga qisqacha javob — asosiy fikrlar: ... (bu frontend simulyatsiya)`;
+    document.getElementById('aiResponse').innerText = resp;
+    hideLoadingAI();
+  },800);
+}
+function aiGenerateTest(){
+  showLoadingAI();
+  setTimeout(()=>{
+    document.getElementById('aiResponse').innerText = 'Yaratildi: 10 ta test savoli (simulyatsiya).';
+    hideLoadingAI();
+  },1000);
+}
+function aiExplain(){
+  showLoadingAI();
+  setTimeout(()=>{
+    document.getElementById('aiResponse').innerText = 'Tushuntirish: Asosiy nuqtalar — ... (sim).';
+    hideLoadingAI();
+  },800);
+}
+function showLoadingAI(){ document.getElementById('aiResponse').innerText='AI ishlamoqda...'; }
+function hideLoadingAI(){ /* nothing extra */ }
+
+/* =============================
+   Notifications & Automations
+   ============================= */
+function showNotification(msg){
+  const n = {id:uid(), text:msg, date:Date.now()};
+  state.notifications.unshift(n); saveState(); renderNotifications();
+  // small toast
+  const box = document.getElementById('notifications'); box.innerText = msg; box.style.display='block';
+  setTimeout(()=>box.style.display='none',3800);
+}
+function renderNotifications(){
+  const list = document.getElementById('notifList'); list.innerHTML='';
+  state.notifications.slice(0,20).forEach(n=>{
+    const d=document.createElement('div'); d.className='notif'; d.innerText = new Date(n.date).toLocaleTimeString() + ' — ' + n.text;
+    list.appendChild(d);
+  });
+  document.getElementById('notifCount').innerText = state.notifications.length;
+  document.getElementById('kpiNotifs').innerText = state.notifications.length;
+}
+
+/* automation builder */
+function openAutomation(){ document.getElementById('automationModal').style.display='block'; }
+function closeAutomation(){ document.getElementById('automationModal').style.display='none'; }
+function createAutomation(){
+  const cls = document.getElementById('autoClass').value;
+  const subject = document.getElementById('autoSubject').value;
+  const interval = parseInt(document.getElementById('autoInterval').value || '60');
+  const msg = document.getElementById('autoMsg').value || `{{student}} uchun yangilik: {{subject}}`;
+  if(!interval || interval<5){ alert('Intervalni soniya bilan kiriting (kamida 5)'); return; }
+  const a = {id:uid(), cls, subject, interval, msg, timerId:null};
+  // start timer
+  a.timerId = setInterval(()=> runAutomation(a.id), interval*1000);
+  state.automations.push(a); saveState(); renderAutomations();
+  showNotification(`Avtomatizatsiya yaratildi: ${cls} - ${subject} every ${interval}s`);
+}
+function runAutomation(aid){
+  const a = state.automations.find(x=>x.id===aid); if(!a) return;
+  // send messages to students in class
+  const studs = state.users.filter(u=>u.role==='student' && u.class===a.cls);
+  studs.forEach(s=>{
+    const txt = a.msg.replace('{{student}}', s.name).replace('{{subject}}', a.subject);
+    state.notifications.unshift({id:uid(), text:txt, date:Date.now()});
+  });
+  saveState(); renderNotifications();
+}
+function renderAutomations(){
+  const el = document.getElementById('autoList'); el.innerHTML='';
+  state.automations.forEach(a=>{
+    const d=document.createElement('div'); d.style.display='flex'; d.style.justifyContent='space-between'; d.style.alignItems='center'; d.style.padding='6px';
+    d.innerHTML = `<div style="font-weight:700">${a.cls} • ${a.subject}</div><div><button class="panel-button" onclick="stopAutomation('${a.id}')">To'xtat</button></div>`;
+    el.appendChild(d);
+  });
+  document.getElementById('kpiAuto').innerText = state.automations.length;
+  const sum = state.automations.map(a=>a.cls+' '+a.subject).join(', ');
+  document.getElementById('autoSummary').innerText = sum || 'Yo\'q';
+}
+function stopAutomation(aid){
+  const idx = state.automations.findIndex(x=>x.id===aid);
+  if(idx>=0){
+    clearInterval(state.automations[idx].timerId);
+    state.automations.splice(idx,1); saveState(); renderAutomations(); showNotification('Avtomatizatsiya to\'xtatildi');
+  }
+}
+
+/* render automations on load */
+function renderAutomationsOnLoad(){
+  state.automations.forEach(a=>{
+    if(a.timerId==null){
+      a.timerId = setInterval(()=> runAutomation(a.id), a.interval*1000);
     }
+  });
+}
+renderAutomationsOnLoad();
 
-    // Generate classes 1A–11D
-    const grades = ["A", "B", "V", "D"];
-    for (let i = 1; i <= 11; i++) {
-        grades.forEach(g => {
-            const c = document.createElement("div");
-            c.className = "class-card";
-            c.innerText = i + g;
-            c.onclick = () => loadSubjects(i + g);
-            document.getElementById("classList").appendChild(c);
-        });
-    }
+/* =============================
+   Utilities
+   ============================= */
+function updateKPIs(){
+  document.getElementById('kpiStudents').innerText = state.users.filter(u=>u.role==='student').length;
+  document.getElementById('kpiNotifs').innerText = state.notifications.length;
+  document.getElementById('kpiAuto').innerText = state.automations.length;
+}
+function quickSearch(){
+  const q = document.getElementById('quickSearch').value.toLowerCase();
+  if(!q){ renderClasses(); renderSubjects(); return; }
+  // filter subjects
+  const sgrid = document.getElementById('subjectsGrid'); sgrid.innerHTML='';
+  SUBJECTS.filter(s=>s.toLowerCase().includes(q)).forEach(s=>{
+    const c=document.createElement('div'); c.className='subject-card'; c.innerHTML = `<div style="font-weight:800;color:#243B6B">${s}</div><div style="margin-top:10px"><button class="tool-btn" onclick="openSubject('${s}')">Ochish</button></div>`;
+    sgrid.appendChild(c);
+  });
+  // classes filter
+  const cgrid = document.getElementById('classesGrid'); cgrid.innerHTML='';
+  CLASSES.filter(c=>c.toLowerCase().includes(q)).forEach(c=>{
+    const d=document.createElement('div'); d.className='class-item'; d.innerText=c; d.onclick = ()=>{ document.getElementById('uClass').innerText=c; state.currentUser.class=c; saveState(); showClassSubjects(c) }; cgrid.appendChild(d);
+  });
+}
 
-    const subjectsList = [
-        "Matematika", "Fizika", "Ingliz tili", "Ona tili",
-        "Kimyo", "Biologiya", "Tarix", "Geografiya",
-        "Algebra", "Geometriya", "Informatika", "Sport",
-        "Tarbiya", "Iqtisod", "Huquq", "Musiqa", "San’at"
-    ];
+/* populate on load if user previously logged in */
+if(state.currentUser){
+  openApp();
+}
 
-    function loadSubjects(cls) {
-        document.getElementById("subjectsSection").style.display = "block";
-        document.getElementById("selectedClass").innerText = "Sinf: " + cls;
+/* helper: open grade modal prefill */
+document.getElementById('modalClass').value = CLASSES[0];
 
-        const box = document.getElementById("subjects");
-        box.innerHTML = "";
+/* render notifications */
+renderNotifications();
+updateKPIs();
 
-        subjectsList.forEach(sub => {
-            const card = document.createElement("div");
-            card.className = "subject-card";
-            card.innerText = sub;
-            box.appendChild(card);
-        });
-    }
+/* simple periodic reminder to simulate auto-login/session refresh */
+setInterval(()=>{
+  // if auto-login toggle is enabled, simulate session refresh
+  const auto = document.getElementById('autoLoginToggle') ? document.getElementById('autoLoginToggle').checked : false;
+  if(auto && state.currentUser){
+    showNotification("Sessiya yangilandi — auto-login simulyatsiyasi");
+  }
+}, 60000);
+
+/* small utility functions */
+function openGradeModalUI(){
+  openGradeModal();
+}
+
+/* helpers for UI items referenced earlier */
+function openGradeModal(){ openGradeModal(); } // kept for tool-btn usage (no-op)
+/* END */
 </script>
-
 </body>
-</html>
+    </html>
